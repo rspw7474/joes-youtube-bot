@@ -5,13 +5,14 @@ from discord.ext import commands
 import feedparser
 import yt_dlp
 from data_handler import DataHandler
+from feed_checker import FeedChecker
 
 
 class YouTubeBot(commands.Bot):
-    def __init__(self, data_handler: DataHandler):
+    def __init__(self):
         super().__init__(command_prefix="!", intents=discord.Intents.default())
-        self.data_handler = data_handler
-        self.update_interval = 5
+        self.data_handler = DataHandler()
+        self.feed_checker = FeedChecker(self, self.data_handler)
 
     async def setup_hook(self):
         self.tree.add_command(app_commands.Command(
@@ -51,6 +52,7 @@ class YouTubeBot(commands.Bot):
             )
         )
         await self.tree.sync()
+        asyncio.create_task(self.feed_checker.check_feeds())
 
     async def on_ready(self):
         print(f"{self.user} successfully started.")

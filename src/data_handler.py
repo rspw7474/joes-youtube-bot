@@ -5,7 +5,6 @@ import os
 class DataHandler:
     def __init__(self):
         self.token = ""
-        self.token_file_path = "../data/token.txt"
         self.load_token()
         self.data = {
             "latest_videos": {},
@@ -20,10 +19,9 @@ class DataHandler:
         self.load_data()
 
     def load_token(self):
-        if os.path.exists(self.token_file_path):
-            with open(self.token_file_path, "r") as f:
-                self.token = f.read()
-        else:
+        try:
+            self.token = os.environ["JYTB_TOKEN"]
+        except KeyError:
             print("{self.token_file_path} not found. Shutting down...")
             exit()
 
