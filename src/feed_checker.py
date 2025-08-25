@@ -1,61 +1,73 @@
 import asyncio
 from discord.ext import commands, tasks
 import feedparser
-from data_handler import DataHandler
 
 
 class FeedChecker:
-    def __init__(self, youtube_bot: commands.Bot, data_handler: DataHandler):
-        self.youtube_bot = youtube_bot
+    def __init__(self, data_handler, event_queue):
         self.data_handler = data_handler
-        self.update_interval = 300
-          
-    async def check_feeds(self):
-        await self.youtube_bot.wait_until_ready()
-        while not self.youtube_bot.is_closed():
-            for guild_id, channel_ids in self.data_handler.data["subscriptions"].items():
-                guild = self.youtube_bot.get_guild(int(guild_id))
-                if not guild:
-                    continue
+        self.event_queue = event_queue
+        self.update_interval = 5
+        self.latest_videos_limit = 2
+    
+    async def produce_events(self):
+        while True:
+            for dc_server_id, yt_channel_ids in self.data_handler.data["subscriptions"].items():
+                if not self.is_dc_channel_targeted(dc_server_id):
+                    continue          
                 
-                if guild_id not in self.data_handler.data["target_channels"]:
-                    continue
-                
-                target_channel = self.youtube_bot.get_channel(self.data_handler.data["target_channels"][guild_id])
-                if not target_channel:
-                    continue
-                
-                for channel_id in channel_ids:
-                    url = f"https://www.youtube.com/feeds/videos.xml?channel_id={channel_id}"
-                    feed = feedparser.parse(url)
-
-                    if not feed.entries:
+                for yt_channel_id in yt_channel_ids:
+                    yt_channel_feed = self.get_yt_channel_feed(yt_channel_id)
+                    if not yt_channel_feed:
                         continue
-                
-                    latest_video = feed.entries[0]
+                               
+                    latest_video = yt_channel_feed.entries[0]
+                    latest_video_id = latest_video.yt_videoid
 
                     if "/shorts/" in latest_video.link:
                         continue
-
-                    latest_video_id = latest_video.yt_videoid
-
-                    if channel_id not in self.data_handler.data["latest_videos"]:
-                        self.data_handler.data["latest_videos"][channel_id] = []
-
-                    if self.is_new_video(channel_id, latest_video_id):                  
-                        self.update_latest_videos(channel_id, latest_video_id)
+                    
+                    if not self.is_yt_channel_registered(yt_channel_id):
+                        self.register_yt_channel(yt_channel_id)
+                    
+                    if self.is_new_video(yt_channel_id, latest_video_id):
+                        self.data_handler.update_latest_videos(yt_channel_id, latest_video_id)
                         self.data_handler.save_data("latest_videos")
-                        await target_channel.send(f"{feed.feed.title} published a new video:\n{latest_video.link}")
+                        event = self.produce_event(dc_server_id, yt_channel_feed.feed.title, latest_video.link)
+                        await self.event_queue.put(event)
 
             await asyncio.sleep(self.update_interval)
     
-    def is_new_video(self, channel_id: str, video_id: str) -> bool:
-        if video_id not in self.data_handler.data["latest_videos"][channel_id]:
+    def is_dc_channel_targeted(self, dc_server_id: str) -> bool:
+        if dc_server_id in self.data_handler.data["target_dc_channels"]:
             return True
         else:
             return False
     
-    def update_latest_videos(self, channel_id: str, video_id: str):
-        self.data_handler.data["latest_videos"][channel_id].append(video_id)
-        if len(self.data_handler.data["latest_videos"][channel_id]) > 2:
-            self.data_handler.data["latest_videos"][channel_id].pop(0)
+    def get_yt_channel_feed(self, yt_channel_id: str) -> feedparser.util.FeedParserDict:
+        yt_channel_url = f"https://www.youtube.com/feeds/videos.xml?channel_id={yt_channel_id}"
+        yt_channel_feed = feedparser.parse(yt_channel_url)
+        return yt_channel_feed
+    
+    def is_yt_channel_registered(self, yt_channel_id: str) -> bool:
+        if yt_channel_id in self.data_handler.data["latest_videos"]:
+            return True
+        else:
+            return False
+    
+    def register_yt_channel(self, yt_channel_id: str) -> None:
+        self.data_handler.data["latest_videos"][yt_channel_id] = []
+    
+    def is_new_video(self, yt_channel_id: str, video_id: str) -> bool:
+        if video_id not in self.data_handler.data["latest_videos"][yt_channel_id]:
+            return True
+        else:
+            return False
+    
+    def produce_event(self, dc_server_id: str, yt_channel_name: str, latest_video_link: str) -> dict:
+        event = {
+            "dc_server_id": dc_server_id,
+            "yt_channel_name": yt_channel_name,
+            "latest_video_link": latest_video_link
+        }
+        return event
