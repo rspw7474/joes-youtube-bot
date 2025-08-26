@@ -11,13 +11,13 @@ Joe's YouTube Bot is a Discord bot for interfacing with YouTube. It allows a Dis
 5. Click `Authorize`.
 
 ### Set up YouTube channel updates.
-By default, the bot doesn't send updates on subscribed YouTube channels.\
+By default, the bot does not send updates on subscribed YouTube channels.\
 Run `/target-for-updates` in a text channel to target it for updates. Only one text channel can be targeted at a time.\
 Updates include notifications when subscribed YouTube channels publish new videos, complete with links and embedded videos.
 
 ### Set up permissions and integrations (optional).
 #### Permissions
-You may want to configure a text channel so that only the bot can send messages in it. To do this:
+You may want to configure a text channel so only the bot can send messages in it. To do this:
 1. Right-click on the text channel.
 2. Click `Edit Channel`.
 3. Click `Permissions` in the left pane.
@@ -32,7 +32,7 @@ To configure integrations:
 2. Hover over `Server Settings`.
 3. Click `Integrations`.
 4. Under `Bots and Apps`, click `Joe's YouTube Bot`.
-5. From this menu, you can configure the bot so that its commands can only be run by certain members or in certain text channels.
+5. From this menu, you can configure the bot so its commands can only be run by certain members or in certain text channels.
 <br><br>
 
 # Usage
@@ -58,7 +58,7 @@ List all YouTube channels to which you are currently subscribed.
 Unsubscribe from all YouTube channels to which you are currently subscribed.
 
 ### `/clear-target-channel`
-Untarget the text channel that is currently targeted for updates on subscribed YouTube channels. You won't receive updates until a text channel is targeted using `/target-for-updates`.
+Untarget the text channel that is currently targeted for updates on subscribed YouTube channels. You will not receive updates until a text channel is targeted using `/target-for-updates`.
 <br><br>
 
 # Built Using
