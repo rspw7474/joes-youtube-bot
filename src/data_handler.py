@@ -3,7 +3,8 @@ import os
 
 
 class DataHandler:
-    def __init__(self):
+    def __init__(self, logger):
+        self.logger = logger
         self.token = ""
         self.load_token()
         self.data_directory_path = os.path.abspath("../data")
@@ -24,7 +25,8 @@ class DataHandler:
         try:
             self.token = os.environ["JYTB_TOKEN"]
         except KeyError:
-            print("Token not found. Shutting down...")
+            log_message = "Token not found. Shutting down."
+            self.logger.log("ERROR", "load_token()", log_message)
             exit()
 
     def load_data(self) -> None:
@@ -33,7 +35,8 @@ class DataHandler:
                 with open(file_path, "r") as f:
                     self.data[data_key] = json.load(f)
             else:
-                print(f"{file_path} not found. Proceeding without loading file...")
+                log_message = f"\"{file_path}\" not found. Proceeding without loading file."
+                self.logger.log("ALERT", "load_data()", log_message)
 
     def save_data(self, data_key: str) -> None:
         with open(self.data_file_paths[data_key], "w") as f:
@@ -71,3 +74,17 @@ class DataHandler:
             return True
         except KeyError:
             return False
+    
+    def remove_dc_server(self, dc_server_id: str) -> str:
+        removed_data = False
+        if dc_server_id in self.data["subscriptions"]:
+            del self.data["subscriptions"][dc_server_id]
+            self.save_data("subscriptions")
+            removed_data = True
+        
+        if dc_server_id in self.data["target_dc_channels"]:
+            del self.data["target_dc_channels"][dc_server_id]
+            self.save_data("target_dc_channels")
+            removed_data = True
+
+        return removed_data

@@ -7,7 +7,7 @@ class FeedChecker:
     def __init__(self, data_handler, event_queue):
         self.data_handler = data_handler
         self.event_queue = event_queue
-        self.update_interval = 300
+        self.update_interval = 5
         self.latest_videos_limit = 2
 
     async def produce_events(self):
@@ -21,6 +21,9 @@ class FeedChecker:
                     if not yt_channel_feed:
                         continue
 
+                    if not yt_channel_feed.entries:
+                        continue
+                    
                     latest_video = yt_channel_feed.entries[0]
                     latest_video_id = latest_video.yt_videoid
 
