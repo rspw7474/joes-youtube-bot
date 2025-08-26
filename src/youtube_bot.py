@@ -61,7 +61,7 @@ class YouTubeBot(commands.Bot):
 
     async def on_ready(self) -> None:
         print(f"{self.user} successfully started.")
-    
+
     async def consume_events(self) -> None:
         while True:
             event = await self.event_queue.get()
@@ -147,7 +147,7 @@ class YouTubeBot(commands.Bot):
 
         yt_channel_names.sort()
         await interaction.followup.send("Subscribed channels:\n" + "\n".join(yt_channel_names))
-    
+
     async def clear_subscriptions(self, interaction: discord.Interaction) -> None:
         await interaction.response.defer(thinking=True)
 
@@ -174,13 +174,13 @@ class YouTubeBot(commands.Bot):
                 return info["channel_id"]
             except:
                 return None
-    
+
     def is_subscribed(self, yt_channel_id: str, dc_server_id: str) -> bool:
         if yt_channel_id in self.data_handler.data["subscriptions"][dc_server_id]:
             return True
         else:
             return False
-    
+
     def dc_server_has_subscriptions(self, dc_server_id: str) -> bool:
         if self.data_handler.data["subscriptions"][dc_server_id]:
             return True

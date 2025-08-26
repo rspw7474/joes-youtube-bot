@@ -38,18 +38,18 @@ class DataHandler:
     def save_data(self, data_key: str) -> None:
         with open(self.data_file_paths[data_key], "w") as f:
             json.dump(self.data[data_key], f, indent=4)
-    
+
     def update_latest_videos(self, yt_channel_id: str, video_id: str) -> None:
         self.data["latest_videos"][yt_channel_id].append(video_id)
         if len(self.data["latest_videos"][yt_channel_id]) > self.latest_videos_limit:
             self.data["latest_videos"][yt_channel_id].pop(0)
-    
+
     def add_dc_server(self, dc_server_id: str) -> None:
         self.data["subscriptions"][dc_server_id] = []
-    
+
     def add_subscription(self, yt_channel_id: str, dc_server_id: str) -> None:
         self.data["subscriptions"][dc_server_id].append(yt_channel_id)
-    
+
     def remove_subscription(self, yt_channel_id: str, dc_server_id: str) -> None:
         self.data["subscriptions"][dc_server_id].remove(yt_channel_id)
 
@@ -60,10 +60,10 @@ class DataHandler:
             return True
         except KeyError:
             return False
-    
+
     def add_target_dc_channel(self, dc_server_id: str, dc_channel_id: str) -> None:
         self.data["target_dc_channels"][dc_server_id] = dc_channel_id
-    
+
     def clear_target_dc_channel(self, dc_server_id: str) -> bool:
         try:
             del self.data["target_dc_channels"][dc_server_id]
