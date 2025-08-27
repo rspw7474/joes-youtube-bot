@@ -46,7 +46,7 @@ Run in a text channel to target it for updates. The bot will send updates on sub
 Subscribe to a YouTube channel.
 
 **Note**:\
-On rare occasions, this command subscribes to unexpected YouTube channels. If this happens, provide the channel's handle (without the @ symbol) instead of its name. A channel's handle can be found on its channel page underneath the name. For example, running `/subscribe` `saba` might subscribe to Saba Pivot the rapper instead of saba the VTuber. In this case, running `/subscribe` `SamekoSaba` is a workaround. This problem sometimes occurs because of the way `yt_dlp` resolves channel names to channel IDs.
+On rare occasions, this command subscribes to unexpected YouTube channels. If this happens, try providing the channel's handle (without the @ symbol) instead of its name. A channel's handle can be found on its channel page underneath the name.
 
 ### `/unsubscribe` `<yt_channel_name>`
 Unsubscribe from a YouTube channel.
