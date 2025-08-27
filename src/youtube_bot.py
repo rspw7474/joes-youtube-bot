@@ -14,6 +14,7 @@ class YouTubeBot(commands.Bot):
         self.feed_checker = feed_checker
         self.logger = logger
         self.event_queue = event_queue
+        self.repo_link = "https://github.com/rspw7474/joes-youtube-bot"
 
     async def setup_hook(self) -> None:
         self.tree.add_command(app_commands.Command(
@@ -22,41 +23,40 @@ class YouTubeBot(commands.Bot):
             callback=self.ping
         ))
         self.tree.add_command(app_commands.Command(
+            name="view-source-code",
+            description="Receive a link to my GitHub repository.",
+            callback=self.view_source_code
+        ))
+        self.tree.add_command(app_commands.Command(
             name="target-for-updates",
             description="Target this text channel for updates on subscribed YouTube channels. Limited to one text channel.",
             callback=self.target_for_updates
-            )
-        )
+        ))
         self.tree.add_command(app_commands.Command(
             name="subscribe",
             description="Subscribe to a YouTube channel.",
             callback=self.subscribe
-            )
-        )
+        ))
         self.tree.add_command(app_commands.Command(
             name="unsubscribe",
             description="Unsubscribe from a YouTube channel.",
             callback=self.unsubscribe
-            )
-        )
+        ))
         self.tree.add_command(app_commands.Command(
             name="list-subscriptions", 
             description="List all YouTube channels to which you are currently subscribed.",
             callback=self.list_subscriptions
-            )
-        )
+        ))
         self.tree.add_command(app_commands.Command(
             name="clear-subscriptions",
             description="Unsubscribe from all YouTube channels to which you are currently subscribed.",
             callback=self.clear_subscriptions
-            )
-        )
+        ))
         self.tree.add_command(app_commands.Command(
             name="clear-target-channel",
             description="Untarget the text channel that is currently targeted for updates on subscribed YouTube channels.",
             callback=self.clear_target_dc_channel
-            )
-        )
+        ))
         await self.tree.sync()
 
     async def on_ready(self) -> None:
@@ -106,6 +106,12 @@ class YouTubeBot(commands.Bot):
         message = "I'm alive."
         log_message = f"\"{message}\" -> {interaction.guild.name}/{interaction.channel.name}"
         self.logger.log("MESSAGE", "ping()", log_message)
+        await interaction.response.send_message(message)
+    
+    async def view_source_code(self, interaction: discord.Interaction) -> None:
+        message = self.repo_link
+        log_message = f"\"{message}\" -> {interaction.guild.name}/{interaction.channel.name}"
+        self.logger.log("MESSAGE", "view_source_code()", log_message)
         await interaction.response.send_message(message)
 
     async def target_for_updates(self, interaction: discord.Interaction) -> None:
