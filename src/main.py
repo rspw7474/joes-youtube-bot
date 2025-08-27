@@ -1,22 +1,24 @@
 import asyncio
 
 from data_handler import DataHandler
-from feed_checker import FeedChecker
 from logger import Logger
-from youtube_bot import YouTubeBot
-from youtube_feed_parser import YouTubeFeedParser
+from yt_bot import YTBot
+from yt_channel_fetcher import YTChannelFetcher
+from yt_feed_checker import YTFeedChecker
+from yt_feed_fetcher import YTFeedFetcher
 
 
 async def main():
     logger = Logger()
     data_handler = DataHandler(logger)
-    youtube_feed_parser = YouTubeFeedParser()
     event_queue = asyncio.Queue()
-    feed_checker = FeedChecker(data_handler, youtube_feed_parser, event_queue)
-    youtube_bot = YouTubeBot(data_handler, feed_checker, logger, event_queue)
+    yt_channel_fetcher = YTChannelFetcher()
+    yt_feed_fetcher = YTFeedFetcher()
+    yt_feed_checker = YTFeedChecker(data_handler, event_queue, yt_feed_fetcher)
+    yt_bot = YTBot(data_handler, event_queue, logger, yt_channel_fetcher, yt_feed_checker)
 
-    async with youtube_bot: 
-        await youtube_bot.start(youtube_bot.data_handler.token)
+    async with yt_bot: 
+        await yt_bot.start(yt_bot.data_handler.token)
 
 
 if __name__ == "__main__":

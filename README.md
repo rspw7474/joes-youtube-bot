@@ -1,5 +1,5 @@
 # About
-Joe's YouTube Bot is a Discord bot for interfacing with YouTube. It allows a Discord server to function like a Google Account by subscribing to YouTube channels and receiving updates about them.
+Joe's YouTube Bot is a Discord bot for interfacing with YouTube. It allows a Discord server to function like a Google Account by subscribing to YouTube channels and getting notifications about them.
 <br><br>
 
 # Setup
@@ -10,10 +10,10 @@ Joe's YouTube Bot is a Discord bot for interfacing with YouTube. It allows a Dis
 4. Ensure the `Send Messages` permission is selected.
 5. Click `Authorize`.
 
-### Set up YouTube channel updates.
-By default, the bot does not send updates on subscribed YouTube channels.\
-Run `/target-for-updates` in a text channel to target it for updates. Only one text channel can be targeted at a time.\
-Updates include notifications when subscribed YouTube channels publish new videos, complete with links and embedded videos.
+### Set up notifications.
+By default, the bot does not send notifications about subscribed YouTube channels.\
+Run `/get-notifications` in a text channel to get notifications.\
+Notifications include links and embedded videos.
 
 ### Set up permissions and integrations (optional).
 #### Permissions
@@ -23,8 +23,10 @@ You may want to configure a text channel so only the bot can send messages in it
 3. Click `Permissions` in the left pane.
 4. Under `Advanced Permissions`, click the `@everyone` role.
 5. Under `Text Channel Permissions`, click the red X next to `Send Messages`.
-6. Click the `Joe's YouTube Bot` role.
-7. Under `Text Channel Permissions`, click the green check mark next to `Send Messages`.
+6. Next to `ROLES/MEMBERS`, click the plus sign.
+7. Click `Joe's YouTube Bot`.
+8. Under `ROLES/MEMBERS`, ensure `Joe's YouTube Bot` is selected.
+9. Under `Text Channel Permissions`, click the green check mark next to `Send Messages`.
 
 #### Integrations
 To configure integrations:
@@ -39,8 +41,8 @@ To configure integrations:
 ### `/ping`
 Check if the bot is running.
 
-### `/target-for-updates`
-Run in a text channel to target it for updates. The bot will send updates on subscribed YouTube channels to that text channel.
+### `/get-notifications`
+Run in a text channel to get notifications about subscribed YouTube channels.
 
 ### `/subscribe` `<yt_channel_name>`
 Subscribe to a YouTube channel.
@@ -57,8 +59,8 @@ List all YouTube channels to which you are currently subscribed.
 ### `/clear-subscriptions`
 Unsubscribe from all YouTube channels to which you are currently subscribed.
 
-### `/clear-target-channel`
-Untarget the text channel that is currently targeted for updates on subscribed YouTube channels. You will not receive updates until a text channel is targeted using `/target-for-updates`.
+### `/stop-notifications`
+Stop getting notifications about subscribed YouTube channels.
 <br><br>
 
 # Built Using

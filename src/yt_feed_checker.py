@@ -1,12 +1,12 @@
 import asyncio
 
 
-class FeedChecker:
-    def __init__(self, data_handler, youtube_feed_parser, event_queue):
+class YTFeedChecker:
+    def __init__(self, data_handler, event_queue, yt_feed_fetcher):
         self.data_handler = data_handler
-        self.youtube_feed_parser = youtube_feed_parser
+        self.yt_feed_fetcher = yt_feed_fetcher
         self.event_queue = event_queue
-        self.update_interval = 5
+        self.update_interval = 300
         self.latest_videos_limit = 2
 
     async def produce_events(self):
@@ -17,7 +17,7 @@ class FeedChecker:
                     continue
                 
                 for yt_channel_id in self.data_handler.list_subscriptions(dc_server_id):
-                    yt_channel_feed = self.youtube_feed_parser.get_yt_channel_feed(yt_channel_id)
+                    yt_channel_feed = self.yt_feed_fetcher.get_yt_channel_feed(yt_channel_id)
                     if not yt_channel_feed:
                         continue
 
