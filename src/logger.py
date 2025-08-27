@@ -4,7 +4,9 @@ import os
 
 class Logger:
     def __init__(self):
-        self.logs_file_path = os.path.abspath("../logs/logs.txt")
+        path_here = os.path.abspath(__file__)
+        project_path = os.path.dirname(os.path.dirname(path_here))
+        self.logs_file_path = project_path + "/logs/logs.txt"
 
     def log(self, category: str, source_function: str, message: str) -> None:
         current_date = datetime.now().date()
