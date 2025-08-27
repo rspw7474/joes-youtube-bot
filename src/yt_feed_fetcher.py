@@ -1,7 +1,7 @@
 import feedparser
 
 
-class YouTubeFeedParser:
+class YTFeedFetcher:
     def __init__(self):
         self.yt_channel_url_fragment = "https://www.youtube.com/feeds/videos.xml?channel_id="
     
