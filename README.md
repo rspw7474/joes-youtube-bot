@@ -43,6 +43,9 @@ Check if the bot is running.
 ### `/get-notifications`
 Run in a text channel to get notifications about subscribed YouTube channels.
 
+### `/stop-notifications`
+Stop getting notifications about subscribed YouTube channels.
+
 ### `/subscribe` `<yt_channel_name>`
 Subscribe to a YouTube channel.
 
@@ -56,9 +59,6 @@ List all YouTube channels to which you are currently subscribed.
 
 ### `/clear-subscriptions`
 Unsubscribe from all YouTube channels to which you are currently subscribed.
-
-### `/stop-notifications`
-Stop getting notifications about subscribed YouTube channels.
 <br><br>
 
 # Built Using
