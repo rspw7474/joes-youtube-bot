@@ -1,31 +1,34 @@
 import json
+from logger import logger
 import os
 
 
 class DataHandler:
-    def __init__(self, logger):
-        self.logger = logger
+    def __init__(self):
         self.token = ""
         self.load_token()
-        data_directory_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/data"
+
         self.data = {
             "latest_videos": {},
             "subscriptions": {},
             "target_dc_channels": {}
         }
+        data_directory_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/data"
+        os.makedirs(data_directory_path, exist_ok=True)
         self.data_file_paths = {
             "latest_videos": data_directory_path + "/latest_videos.json",
             "subscriptions": data_directory_path + "/subscriptions.json",
             "target_dc_channels": data_directory_path + "/target_dc_channels.json"
         }
         self.load_data()
+
         self.latest_videos_limit = 2
 
     def load_token(self) -> None:
         self.token = os.environ.get("JYTB_TOKEN")
         if not self.token:
             log_message = "Token not found. Shutting down."
-            self.logger.log("ERROR", "load_token()", log_message)
+            logger.error(log_message)
             exit()
 
     def save_data(self, data_key: str) -> None:
@@ -39,7 +42,7 @@ class DataHandler:
                     self.data[data_key] = json.load(f)
             else:
                 log_message = f"\"{file_path}\" not found. Proceeding without loading file."
-                self.logger.log("ALERT", "load_data()", log_message)
+                logger.warning(log_message)
 
     def add_target_dc_channel(self, dc_server_id: str, dc_channel_id: str) -> bool:
         if dc_server_id in self.data["target_dc_channels"]:
