@@ -63,7 +63,7 @@ Stop getting notifications about subscribed YouTube channels.
 
 # Built Using
 ### discord.py
-- [repository](https://github.com/Rapptz/discord.py?tab=readme-ov-file)
+- [repository](https://github.com/Rapptz/discord.py)
 - [documentation](https://discordpy.readthedocs.io/en/stable/)
 ### feedparser
 - [repository](https://github.com/kurtmckee/feedparser)
