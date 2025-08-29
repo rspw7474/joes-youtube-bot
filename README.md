@@ -11,8 +11,7 @@ Joe's YouTube Bot is a Discord bot for interfacing with YouTube. It allows a Dis
 5. Click `Authorize`.
 
 ### Set up notifications.
-By default, the bot does not send notifications about subscribed YouTube channels.\
-Run `/get-notifications` in a text channel to get notifications.\
+Run `/get-notifications` in a text channel to get notifications about subscribed YouTube channels.\
 Notifications include links and embedded videos.
 
 ### Set up permissions and integrations (optional).
@@ -47,8 +46,7 @@ Run in a text channel to get notifications about subscribed YouTube channels.
 ### `/subscribe` `<yt_channel_name>`
 Subscribe to a YouTube channel.
 
-**Note**:\
-On rare occasions, this command subscribes to unexpected YouTube channels. If this happens, try providing the channel's handle (without the @ symbol) instead of its name. A channel's handle can be found on its channel page underneath the name.
+**Note**: Sometimes, this command subscribes to unexpected YouTube channels. If this happens, try providing the channel's handle (without the @ symbol) instead of its name. A channel's handle can be found on its channel page underneath the name.
 
 ### `/unsubscribe` `<yt_channel_name>`
 Unsubscribe from a YouTube channel.

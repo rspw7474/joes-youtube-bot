@@ -1,15 +1,15 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
+from logger import logger
 
 
 class YTBot(commands.Bot):
-    def __init__(self, data_handler, event_queue, logger, yt_channel_fetcher, yt_feed_checker):
+    def __init__(self, data_handler, event_queue, yt_channel_fetcher, yt_feed_checker):
         super().__init__(command_prefix="!", intents=discord.Intents.default())
 
         self.data_handler = data_handler
         self.event_queue = event_queue
-        self.logger = logger
         self.yt_channel_fetcher = yt_channel_fetcher
         self.yt_feed_checker = yt_feed_checker
 
@@ -61,15 +61,16 @@ class YTBot(commands.Bot):
     async def on_ready(self) -> None:
         self.loop.create_task(self.yt_feed_checker.produce_events())
         self.loop.create_task(self.consume_events())
-        self.logger.log("STARTUP", "on_ready()", f"{self.user} successfully started.")
+        log_message = f"{self.user} successfully started."
+        logger.info(log_message)
 
     async def on_guild_join(self, guild: discord.Guild) -> None:
         log_message = f"{guild.name} invited bot."
-        self.logger.log("ALERT", "on_guild_join()", log_message)
+        logger.info(log_message)
 
     async def on_guild_remove(self, guild: discord.Guild) -> None:
         log_message = f"{guild.name} kicked bot."
-        self.logger.log("ALERT", "on_guild_remove()", log_message)
+        logger.info(log_message)
 
         dc_server_id = str(guild.id)
         if self.data_handler.remove_dc_server(dc_server_id):
@@ -77,40 +78,47 @@ class YTBot(commands.Bot):
         else:
             log_message = f"{guild.name} has no data to remove."
 
-        self.logger.log("ALERT", "on_guild_remove()", log_message)
+        logger.info(log_message)
 
     async def consume_events(self) -> None:
         while True:
             event = await self.event_queue.get()
-            dc_server_id = event["dc_server_id"]
-            dc_server = await self.get_dc_server(dc_server_id)
-            if not dc_server:
-                continue
+            try:
+                dc_server_id = event["dc_server_id"]
+                dc_server = await self.get_dc_server(dc_server_id)
+                if not dc_server:
+                    continue
 
-            target_dc_channel_id = self.data_handler.get_target_dc_channel(dc_server_id)
-            if not target_dc_channel_id:
-                continue
+                target_dc_channel_id = self.data_handler.get_target_dc_channel(dc_server_id)
+                if not target_dc_channel_id:
+                    continue
 
-            target_dc_channel = await self.get_dc_channel(target_dc_channel_id)
-            if not target_dc_channel:
-                continue
+                target_dc_channel = await self.get_dc_channel(target_dc_channel_id)
+                if not target_dc_channel:
+                    continue
 
-            message = f"{event["yt_channel_name"]} published a new video:\n{event["latest_video_link"]}"
-            log_message = f"\"{message}\" -> {dc_server}/{target_dc_channel}"
-            self.logger.log("MESSAGE", "consume_events()", log_message)
-            await self.send_message(target_dc_channel, message)
-            self.event_queue.task_done()
+                message = f"{event["yt_channel_name"]} published a new video:\n{event["latest_video_link"]}"
+                log_message = f"\"{message}\" -> {dc_server}/{target_dc_channel}".replace("\n", " ")
+                logger.info(log_message)
+                await self.send_message(target_dc_channel, message)
+
+            except Exception as e:
+                log_message = str(e)
+                logger.error(log_message)
+
+            finally:
+                self.event_queue.task_done()
 
     async def ping(self, interaction: discord.Interaction) -> None:
         message = "I'm alive."
         log_message = f"\"{message}\" -> {interaction.guild.name}/{interaction.channel.name}"
-        self.logger.log("MESSAGE", "ping()", log_message)
+        logger.info(log_message)
         await interaction.response.send_message(message)
 
     async def view_source_code(self, interaction: discord.Interaction) -> None:
         message = self.repo_link
         log_message = f"\"{message}\" -> {interaction.guild.name}/{interaction.channel.name}"
-        self.logger.log("MESSAGE", "view_source_code()", log_message)
+        logger.info(log_message)
         await interaction.response.send_message(message)
 
     async def target_for_notifications(self, interaction: discord.Interaction) -> None:
@@ -122,9 +130,9 @@ class YTBot(commands.Bot):
 
         message = "You will get notifications in this text channel."
         log_message = f"\"{message}\" -> {interaction.guild.name}/{interaction.channel.name}"
-        self.logger.log("MESSAGE", "target_for_notifications()", log_message)
+        logger.info(log_message)
         await interaction.followup.send(message)
-    
+
     async def untarget_for_notifications(self, interaction: discord.Interaction) -> None:
         await interaction.response.defer(thinking=True)
 
@@ -135,7 +143,7 @@ class YTBot(commands.Bot):
             message = "Not receiving notifications."
 
         log_message = f"\"{message}\" -> {interaction.guild.name}/{interaction.channel.name}"
-        self.logger.log("MESSAGE", "untarget_for_notifications()", log_message)
+        logger.info(log_message)
         await interaction.followup.send(message)
 
     async def subscribe(self, interaction: discord.Interaction, yt_channel_name: str) -> None:
@@ -151,7 +159,7 @@ class YTBot(commands.Bot):
         if not yt_channel_id:
             message = f"Couldn't find {yt_channel_name}."
             log_message = f"\"{message}\" -> {interaction.guild.name}/{interaction.channel.name}"
-            self.logger.log("MESSAGE", "change_subscription()", log_message)
+            logger.info(log_message)
             await interaction.followup.send(message)
             return
 
@@ -168,7 +176,7 @@ class YTBot(commands.Bot):
                 message = f"Not subscribed to {yt_channel_name}."
 
         log_message = f"\"{message}\" -> {interaction.guild.name}/{interaction.channel.name}"
-        self.logger.log("MESSAGE", "change_subscription()", log_message)
+        logger.info(log_message)
         await interaction.followup.send(message)
 
     async def list_subscriptions(self, interaction: discord.Interaction) -> None:
@@ -178,7 +186,7 @@ class YTBot(commands.Bot):
         if not self.data_handler.list_subscriptions(dc_server_id):
             message = "No subscriptions yet."
             log_message = f"\"{message}\" -> {interaction.guild.name}/{interaction.channel.name}"
-            self.logger.log("MESSAGE", "list_subscriptions()", log_message)
+            logger.info(log_message)
             await interaction.followup.send(message)
             return
 
@@ -194,7 +202,8 @@ class YTBot(commands.Bot):
 
         yt_channel_names.sort()
         message = "Subscribed channels:\n" + "\n".join(yt_channel_names)
-        self.logger.log("MESSAGE", "list_subscriptions()", f"\"{message}\" -> {interaction.guild.name}/{interaction.channel.name}")
+        log_message = f"\"{message}\" -> {interaction.guild.name}/{interaction.channel.name}".replace("\n", " ")
+        logger.info(log_message)
         await interaction.followup.send(message)
 
     async def clear_subscriptions(self, interaction: discord.Interaction) -> None:
@@ -207,7 +216,7 @@ class YTBot(commands.Bot):
             message = "No subscriptions yet."
 
         log_message = f"\"{message}\" -> {interaction.guild.name}/{interaction.channel.name}"
-        self.logger.log("MESSAGE", "clear_subscriptions()", log_message)
+        logger.info(log_message)
         await interaction.followup.send(message)
 
     async def send_message(self, target_dc_channel: discord.channel.TextChannel, message: str) -> None:
@@ -215,24 +224,22 @@ class YTBot(commands.Bot):
             await target_dc_channel.send(message)
         except Exception as e:
             log_message = str(e)
-            self.logger.log("ERROR", "send_message()", log_message)
+            logger.error(log_message)
 
     async def get_dc_server(self, dc_server_id: str) -> discord.guild.Guild | None:
         try:
             dc_server = await self.fetch_guild(dc_server_id)
+            return dc_server
         except Exception as e:
             log_message = str(e)
-            self.logger.log("ERROR", "get_dc_server()", log_message)
-            dc_server = None
-
-        return dc_server
+            logger.error(log_message)
+            return None
 
     async def get_dc_channel(self, target_dc_channel_id: str) -> discord.channel.TextChannel | None:
         try:
             target_dc_channel = await self.fetch_channel(target_dc_channel_id)
+            return target_dc_channel
         except Exception as e:
             log_message = str(e)
-            self.logger.log("ERROR", "get_dc_channel()", log_message)
-            target_dc_channel = None
-
-        return target_dc_channel
+            logger.error(log_message)
+            return None

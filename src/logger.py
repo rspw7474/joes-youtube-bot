@@ -1,18 +1,21 @@
-from datetime import datetime
+import logging
 import os
 
 
-class Logger:
-    def __init__(self):
-        path_here = os.path.abspath(__file__)
-        project_path = os.path.dirname(os.path.dirname(path_here))
-        self.logs_file_path = project_path + "/logs/logs.txt"
+def create_logger() -> logging.Logger:
+    logs_directory_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/logs"
+    logs_file_path = logs_directory_path + "/logs.txt"
+    os.makedirs(logs_directory_path, exist_ok=True)
 
-    def log(self, category: str, source_function: str, message: str) -> None:
-        current_date = datetime.now().date()
-        current_time = datetime.now().time().strftime("%H:%M:%S")
-        message = message.replace("\n", " ")
-        log = f"[{current_date}][{current_time}][{category}][{source_function}] {message}"
-        print(log)
-        with open(self.logs_file_path, "a") as f:
-            f.write(log + "\n")
+    logger = logging.getLogger("ytb")
+    logging.basicConfig(
+        level=logging.INFO,
+        format="[%(asctime)s][%(levelname)s] %(message)s",
+        handlers=[
+            logging.StreamHandler(),
+            logging.FileHandler(logs_file_path)
+        ]
+    )
+    return logger
+
+logger = create_logger()
