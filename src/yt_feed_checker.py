@@ -7,7 +7,6 @@ class YTFeedChecker:
         self.data_handler = data_handler
         self.event_queue = event_queue
         self.yt_feed_fetcher = yt_feed_fetcher
-
         self.update_interval = 300
 
     async def produce_events(self):
@@ -27,13 +26,13 @@ class YTFeedChecker:
                                 continue
 
                             latest_video = yt_channel_feed.entries[0]
-                            latest_video_id = latest_video.yt_videoid
+                            latest_video_datetime = latest_video.published
 
                             if "/shorts/" in latest_video.link:
                                 continue
 
-                            if self.data_handler.is_new_video(yt_channel_id, latest_video_id):
-                                self.data_handler.update_latest_videos(yt_channel_id, latest_video_id)
+                            if self.data_handler.is_new_video(yt_channel_id, latest_video_datetime):
+                                self.data_handler.update_latest_videos(yt_channel_id, latest_video_datetime)
                                 event = self.produce_event(dc_server_id, yt_channel_feed.feed.title, latest_video.link)
                                 await self.event_queue.put(event)
 
