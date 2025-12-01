@@ -7,7 +7,6 @@ class DataHandler:
     def __init__(self):
         self.token = ""
         self.load_token()
-
         self.data = {
             "latest_videos": {},
             "subscriptions": {},
@@ -21,8 +20,6 @@ class DataHandler:
             "target_dc_channels": data_directory_path + "/target_dc_channels.json"
         }
         self.load_data()
-
-        self.latest_videos_limit = 2
 
     def load_token(self) -> None:
         self.token = os.environ.get("JYTB_TOKEN")
@@ -113,16 +110,13 @@ class DataHandler:
 
         return removed_data
 
-    def is_new_video(self, yt_channel_id: str, video_id: str) -> bool:
-        return not video_id in self.data["latest_videos"].get(yt_channel_id, [])
+    def is_new_video(self, yt_channel_id: str, video_datetime: str) -> bool:
+        last_video_datetime = self.data["latest_videos"].get(yt_channel_id)
+        if last_video_datetime is None or video_datetime > last_video_datetime:
+            return True
+        else:
+            return False
 
-    def update_latest_videos(self, yt_channel_id: str, video_id: str) -> None:
-        if not yt_channel_id in self.data["latest_videos"]:
-            self.data["latest_videos"][yt_channel_id] = []
-
-        self.data["latest_videos"][yt_channel_id].append(video_id)
-
-        if len(self.data["latest_videos"][yt_channel_id]) > self.latest_videos_limit:
-            self.data["latest_videos"][yt_channel_id].pop(0)
-
+    def update_latest_videos(self, yt_channel_id: str, video_datetime: str) -> None:
+        self.data["latest_videos"][yt_channel_id] = video_datetime
         self.save_data("latest_videos")
