@@ -7,12 +7,10 @@ from logger import logger
 class YTBot(commands.Bot):
     def __init__(self, data_handler, event_queue, yt_channel_fetcher, yt_feed_checker):
         super().__init__(command_prefix="!", intents=discord.Intents.default())
-
         self.data_handler = data_handler
         self.event_queue = event_queue
         self.yt_channel_fetcher = yt_channel_fetcher
         self.yt_feed_checker = yt_feed_checker
-
         self.repo_link = "https://github.com/rspw7474/joes-youtube-bot"
 
     async def setup_hook(self) -> None:
@@ -220,19 +218,14 @@ class YTBot(commands.Bot):
         await interaction.followup.send(message)
 
     async def send_message(self, target_dc_channel: discord.channel.TextChannel, message: str) -> None:
-        try:
-            await target_dc_channel.send(message)
-        except Exception as e:
-            log_message = str(e)
-            logger.error(log_message)
+        await target_dc_channel.send(message)
 
     async def get_dc_server(self, dc_server_id: str) -> discord.guild.Guild | None:
         try:
             dc_server = await self.fetch_guild(dc_server_id)
             return dc_server
         except Exception as e:
-            log_message = str(e)
-            logger.error(log_message)
+            logger.error(e)
             return None
 
     async def get_dc_channel(self, target_dc_channel_id: str) -> discord.channel.TextChannel | None:
@@ -240,6 +233,5 @@ class YTBot(commands.Bot):
             target_dc_channel = await self.fetch_channel(target_dc_channel_id)
             return target_dc_channel
         except Exception as e:
-            log_message = str(e)
-            logger.error(log_message)
+            logger.error(e)
             return None
