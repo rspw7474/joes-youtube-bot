@@ -49,7 +49,8 @@ Stop getting notifications about subscribed YouTube channels.
 ### `/subscribe` `<yt_channel_name>`
 Subscribe to a YouTube channel.
 
-**Note 1**: Sometimes, this command subscribes to unexpected YouTube channels. If this happens, try providing the channel's handle (without the @ symbol) instead of its name. A channel's handle can be found on its channel page underneath the name.\
+**Note 1**: Sometimes, this command subscribes to unexpected YouTube channels. Try providing the channel's handle (without the @ symbol) instead of its name. A channel's handle can be found on its channel page underneath the name.
+<br><br>
 **Note 2**: When a channel's latest video is collaborative, it cannot be subscribed to. This will be fixed when channel name to channel ID resolution is improved.
 
 ### `/unsubscribe` `<yt_channel_name>`
