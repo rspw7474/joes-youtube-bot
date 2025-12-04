@@ -1,5 +1,5 @@
 # About
-Joe's YouTube Bot is a Discord bot for interfacing with YouTube. It allows a Discord server to function like a Google Account by subscribing to YouTube channels and getting notifications about them.
+Joe's YouTube Bot is a Discord bot for interfacing with YouTube. It allows a Discord server to function like a Google account by subscribing to YouTube channels and getting notifications about them.
 <br><br>
 
 # Setup
